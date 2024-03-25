@@ -249,6 +249,99 @@ class AI:
             arr.append([y,x,move[0],move[1],mk])
         return arr
 
+    pst = {
+        'p': [[ 0,  0,  0,  0,  0,  0,  0,  0],
+              [ 0, 50, 50, 50, 50, 50, 50, 50],
+              [ 0, 10, 20, 30, 30, 20, 10, 10],
+              [ 5,  5, 10, 25, 25, 10,  5,  5],
+              [ 0,  0,  0, 20, 20,  0,  0,  0],
+              [ 5, -5,-10,  0,  0,-10, -5,  5],
+              [ 5, 10, 10,-20,-20, 10, 10,  5],
+              [ 0,  0,  0,  0,  0,  0,  0,  0]],
+
+        'n': [[-50,-40,-30,-30,-30,-30,-40,-50],
+              [-40,-20,  0,  0,  0,  0,-20,-40],
+              [-30,  0, 10, 15, 15, 10,  0,-30],
+              [-30,  5, 15, 20, 20, 15,  5,-30],
+              [-30,  0, 15, 20, 20, 15,  0,-30],
+              [-30,  5, 10, 15, 15, 10,  5,-30],
+              [-40,-20,  0,  5,  5,  0,-20,-40],
+              [-50,-40,-30,-30,-30,-30,-40,-50]],
+
+        'b': [[-20,-10,-10,-10,-10,-10,-10,-20],
+              [-10,  0,  0,  0,  0,  0,  0,-10],
+              [-10,  0,  5, 10, 10,  5,  0,-10],
+              [-10,  5,  5, 10, 10,  5,  5,-10],
+              [-10,  0, 10, 10, 10, 10,  0,-10],
+              [-10, 10, 10, 10, 10, 10, 10,-10],
+              [-10,  5,  0,  0,  0,  0,  5,-10],
+              [-20,-10,-10,-10,-10,-10,-10,-20]],
+
+        'r': [[  0,  0,  0,  0,  0,  0,  0,  0],
+              [  5, 10, 10, 10, 10, 10, 10,  5],
+              [ -5,  0,  0,  0,  0,  0,  0, -5],
+              [ -5,  0,  0,  0,  0,  0,  0, -5],
+              [ -5,  0,  0,  0,  0,  0,  0, -5],
+              [ -5,  0,  0,  0,  0,  0,  0, -5],
+              [ -5,  0,  0,  0,  0,  0,  0, -5],
+              [  0,  0,  0,  5,  5,  0,  0,  0]],
+
+        'q': [[-20,-10,-10, -5, -5,-10,-10,-20],
+              [-10,  0,  0,  0,  0,  0,  0,-10],
+              [-10,  0,  5,  5,  5,  5,  0,-10],
+              [ -5,  0,  5,  5,  5,  5,  0, -5],
+              [  0,  0,  5,  5,  5,  5,  0, -5],
+              [-10,  5,  5,  5,  5,  5,  0,-10],
+              [-10,  0,  5,  0,  0,  0,  0,-10],
+              [-20,-10,-10, -5, -5,-10,-10,-20]],
+
+        'k': [[-30,-40,-40,-50,-50,-40,-40,-30],
+              [-30,-40,-40,-50,-50,-40,-40,-30],
+              [-30,-40,-40,-50,-50,-40,-40,-30],
+              [-30,-40,-40,-50,-50,-40,-40,-30],
+              [-20,-30,-30,-40,-40,-30,-30,-20],
+              [-10,-20,-20,-20,-20,-20,-20,-10],
+              [ 20, 20,  0,  0,  0,  0, 20, 20],
+              [ 20, 30, 10,  0,  0, 10, 30, 20]]
+
+    }
+
+    def piece_square_value(self, piece, x, y):
+        # Get the value from the piece-square table based on the piece type and position
+        if piece.alliance == 'White':
+            return self.pst[piece.tostring().lower()][y][x]
+        else:
+            return self.pst[piece.tostring().lower()][7-y][x]
+
+    def is_king_in_check(self, gametiles, color):
+        # Find the king's position
+        king_position = None
+        for x in range(8):
+            for y in range(8):
+                piece = gametiles[y][x].pieceonTile
+                if piece.tostring().lower() == 'k' and piece.alliance == color:
+                    king_position = (x, y)
+                    break
+            if king_position:
+                break
+
+        if king_position is None:
+            # King not found (likely due to incorrect board state)
+            return False
+
+        # Check for attacks on the king
+        for x in range(8):
+            for y in range(8):
+                piece = gametiles[y][x].pieceonTile
+                if piece.alliance is not None and piece.alliance != color:
+                    legal_moves = piece.legalmoveb(gametiles)
+                    if legal_moves is not None and king_position in legal_moves:
+                        # King is in check
+                        return True
+
+        # King is not in check
+        return False
+
 
     def calculateb(self,gametiles):
         value=0
@@ -261,12 +354,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value+100
+                    piece_value=piece_value + 100 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
                     legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
                     if legal_moves != None:
-                        piece_value = piece_value + 100*len(legal_moves)
+                        piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Doubled pawns: Two pawns in same column
@@ -298,6 +391,20 @@ class AI:
                         piece_value = piece_value - 10
 
 
+                    # Add checks for pawn shelter
+                    if gametiles[y][x].pieceonTile.alliance == 'White':
+                        # Check for pawn shelter
+                        if (y > 1 and gametiles[y-1][x].pieceonTile.tostring() == 'p' and
+                            gametiles[y-2][x].pieceonTile.tostring().lower() == 'p'):
+                            piece_value += 20
+
+                    elif gametiles[y][x].pieceonTile.alliance == 'Black':
+                        # Check for pawn shelter
+                        if (y < 6 and gametiles[y+1][x].pieceonTile.tostring() == 'P' and
+                            gametiles[y+2][x].pieceonTile.tostring() == 'P'):
+                            piece_value += 20
+
+
                     # Make the value negative if it is the opponents piece
                     if (gametiles[y][x].pieceonTile.tostring()=='P'):
                         piece_value = piece_value * -1
@@ -308,12 +415,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value+350
+                    piece_value=piece_value + 350 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
                     legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
                     if legal_moves != None:
-                        piece_value = piece_value + 100*len(legal_moves)
+                        piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -326,12 +433,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value+350
+                    piece_value=piece_value + 350 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
                     legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
                     if legal_moves != None:
-                        piece_value = piece_value + 100*len(legal_moves)
+                        piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -344,12 +451,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value+525
+                    piece_value=piece_value + 525 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
                     legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
                     if legal_moves != None:
-                        piece_value = piece_value + 100*len(legal_moves)
+                        piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -362,12 +469,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value+1000
+                    piece_value=piece_value + 1000 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
                     legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
                     if legal_moves != None:
-                        piece_value = piece_value + 100*len(legal_moves)
+                        piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -380,16 +487,17 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value+10000
+                    piece_value=piece_value + 10000 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
                     legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
                     if legal_moves != None:
-                        piece_value = piece_value + 100*len(legal_moves)
+                        piece_value = piece_value + 50*len(legal_moves)
 
 
-                    # TODO: Check is bad
-                    # if gametiles[y][x].pieceonTile.alliance == 'Black' and checkb(gametiles)[0]
+                    # # Check is bad
+                    # if self.is_king_in_check(gametiles, 'White') or self.is_king_in_check(gametiles, 'Black'):
+                    #     piece_value = piece_value - 50
 
                     # Make the value negative if it is the opponents piece
                     if (gametiles[y][x].pieceonTile.tostring()=='K'):
