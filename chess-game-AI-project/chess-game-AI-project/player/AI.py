@@ -303,7 +303,6 @@ class AI:
               [-10,-20,-20,-20,-20,-20,-20,-10],
               [ 20, 20,  0,  0,  0,  0, 20, 20],
               [ 20, 30, 10,  0,  0, 10, 30, 20]]
-
     }
 
     def piece_square_value(self, piece, x, y):
@@ -357,52 +356,52 @@ class AI:
                     piece_value=piece_value + 100 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
-                    legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
-                    if legal_moves != None:
-                        piece_value = piece_value + 50*len(legal_moves)
+                    # legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
+                    # if legal_moves != None:
+                    #     piece_value = piece_value + 50*len(legal_moves)
 
 
-                    # Doubled pawns: Two pawns in same column
-                    for yp in range(8):
-                        if yp != y and gametiles[yp][x].pieceonTile.tostring() == gametiles[y][x].pieceonTile.tostring():
-                            piece_value = piece_value - 10
+                    # # Doubled pawns: Two pawns in same column
+                    # for yp in range(8):
+                    #     if yp != y and gametiles[yp][x].pieceonTile.tostring() == gametiles[y][x].pieceonTile.tostring():
+                    #         piece_value = piece_value - 10
 
 
-                    # Isolated pawns: No pawns of same color in neighboring column
-                    isolated = True
-                    if x != 0:
-                        xp = x - 1
-                        for yp in range(8):
-                            if gametiles[yp][xp].pieceonTile.tostring() == gametiles[y][x].pieceonTile.tostring():
-                                isolated = False
-                    if x != 7:
-                        xp = x + 1
-                        for yp in range(8):
-                            if gametiles[yp][xp].pieceonTile.tostring() == gametiles[y][x].pieceonTile.tostring():
-                                isolated = False
-                    if isolated:
-                        piece_value = piece_value - 10
+                    # # Isolated pawns: No pawns of same color in neighboring column
+                    # isolated = True
+                    # if x != 0:
+                    #     xp = x - 1
+                    #     for yp in range(8):
+                    #         if gametiles[yp][xp].pieceonTile.tostring() == gametiles[y][x].pieceonTile.tostring():
+                    #             isolated = False
+                    # if x != 7:
+                    #     xp = x + 1
+                    #     for yp in range(8):
+                    #         if gametiles[yp][xp].pieceonTile.tostring() == gametiles[y][x].pieceonTile.tostring():
+                    #             isolated = False
+                    # if isolated:
+                    #     piece_value = piece_value - 10
 
 
-                    # Blocked pawns: Another piece directly in front of pawn and can't take to the diagonal
-                    if gametiles[y][x].pieceonTile.alliance == 'White' and (y == 8 or gametiles[y+1][x].pieceonTile.alliance != None):
-                        piece_value = piece_value - 10
-                    elif gametiles[y][x].pieceonTile.alliance == 'Black' and (y == 0 or gametiles[y-1][x].pieceonTile.alliance != None):
-                        piece_value = piece_value - 10
+                    # # Blocked pawns: Another piece directly in front of pawn and can't take to the diagonal
+                    # if gametiles[y][x].pieceonTile.alliance == 'White' and (y == 8 or gametiles[y+1][x].pieceonTile.alliance != None):
+                    #     piece_value = piece_value - 10
+                    # elif gametiles[y][x].pieceonTile.alliance == 'Black' and (y == 0 or gametiles[y-1][x].pieceonTile.alliance != None):
+                    #     piece_value = piece_value - 10
 
 
-                    # Add checks for pawn shelter
-                    if gametiles[y][x].pieceonTile.alliance == 'White':
-                        # Check for pawn shelter
-                        if (y > 1 and gametiles[y-1][x].pieceonTile.tostring() == 'p' and
-                            gametiles[y-2][x].pieceonTile.tostring().lower() == 'p'):
-                            piece_value += 20
+                    # # Add checks for pawn shelter
+                    # if gametiles[y][x].pieceonTile.alliance == 'White':
+                    #     # Check for pawn shelter
+                    #     if (y > 1 and gametiles[y-1][x].pieceonTile.tostring() == 'p' and
+                    #         gametiles[y-2][x].pieceonTile.tostring().lower() == 'p'):
+                    #         piece_value += 20
 
-                    elif gametiles[y][x].pieceonTile.alliance == 'Black':
-                        # Check for pawn shelter
-                        if (y < 6 and gametiles[y+1][x].pieceonTile.tostring() == 'P' and
-                            gametiles[y+2][x].pieceonTile.tostring() == 'P'):
-                            piece_value += 20
+                    # elif gametiles[y][x].pieceonTile.alliance == 'Black':
+                    #     # Check for pawn shelter
+                    #     if (y < 6 and gametiles[y+1][x].pieceonTile.tostring() == 'P' and
+                    #         gametiles[y+2][x].pieceonTile.tostring() == 'P'):
+                    #         piece_value += 20
 
 
                     # Make the value negative if it is the opponents piece
@@ -415,12 +414,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value + 350 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
+                    piece_value=piece_value + 320 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
-                    legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
-                    if legal_moves != None:
-                        piece_value = piece_value + 50*len(legal_moves)
+                    # legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
+                    # if legal_moves != None:
+                    #     piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -433,12 +432,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value + 350 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
+                    piece_value=piece_value + 330 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
-                    legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
-                    if legal_moves != None:
-                        piece_value = piece_value + 50*len(legal_moves)
+                    # legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
+                    # if legal_moves != None:
+                    #     piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -451,12 +450,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value + 525 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
+                    piece_value=piece_value + 500 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
-                    legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
-                    if legal_moves != None:
-                        piece_value = piece_value + 50*len(legal_moves)
+                    # legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
+                    # if legal_moves != None:
+                    #     piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -469,12 +468,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value + 1000 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
+                    piece_value=piece_value + 900 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
-                    legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
-                    if legal_moves != None:
-                        piece_value = piece_value + 50*len(legal_moves)
+                    # legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
+                    # if legal_moves != None:
+                    #     piece_value = piece_value + 50*len(legal_moves)
 
 
                     # Make the value negative if it is the opponents piece
@@ -487,12 +486,12 @@ class AI:
                     piece_value = 0
 
                     # Base piece value
-                    piece_value=piece_value + 10000 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
+                    piece_value=piece_value + 20000 + self.piece_square_value(gametiles[y][x].pieceonTile, x, y)
 
                     # Mobility score
-                    legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
-                    if legal_moves != None:
-                        piece_value = piece_value + 50*len(legal_moves)
+                    # legal_moves = gametiles[y][x].pieceonTile.legalmoveb(gametiles)
+                    # if legal_moves != None:
+                    #     piece_value = piece_value + 50*len(legal_moves)
 
 
                     # # Check is bad
@@ -506,43 +505,6 @@ class AI:
 
 
         return value
-
-                    ## Old way of checking each piece, better to do by piece type and not whose piece
-                    # if gametiles[y][x].pieceonTile.tostring()=='P':
-                    #     value=value-100
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='N':
-                    #     value=value-350
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='B':
-                    #     value=value-350
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='R':
-                    #     value=value-525
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='Q':
-                    #     value=value-1000
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='K':
-                    #     value=value-10000
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='p':
-                    #     value=value+100
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='n':
-                    #     value=value+350
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='b':
-                    #     value=value+350
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='r':
-                    #     value=value+525
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='q':
-                    #     value=value+1000
-
-                    # if gametiles[y][x].pieceonTile.tostring()=='k':
-                    #     value=value+10000
 
 
     def move(self,gametiles,y,x,n,m):

@@ -204,7 +204,7 @@ class Board:
                 self.undo(connection[0])
 
                 new_connection = self.get_connection()
-                if len(new_connection) != 0:
+                if len(new_connection) != 0 and self.square_value(new_connection[0] == Symbol.CROSS) and connection[0] != new_connection[0]:
                     self.undo(move)
                     self.push(connection[0], Symbol.CIRCLE)
                     return Symbol.CROSS
@@ -222,7 +222,7 @@ class Board:
                 self.undo(connection[0])
 
                 new_connection = self.get_connection()
-                if len(new_connection) != 0:
+                if len(new_connection) != 0 and self.square_value(new_connection[0]) == Symbol.CIRCLE and connection[0] != new_connection[0]:
                     self.undo(move)
                     self.push(connection[0], Symbol.CROSS)
                     return Symbol.CIRCLE
