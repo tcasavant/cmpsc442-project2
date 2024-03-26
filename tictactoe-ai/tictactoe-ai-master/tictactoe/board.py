@@ -228,7 +228,7 @@ class Board:
                     return Symbol.CIRCLE
 
                 self.undo(move)
-                self.push(connection[0], Symbol.CIRCLE)
+                self.push(connection[0], Symbol.CROSS)
 
             return Symbol.CROSS
 
